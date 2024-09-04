@@ -1,0 +1,885 @@
+
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Historical Photos Index Map</title>
+  <script type="module" src="https://js.arcgis.com/calcite-components/2.10.1/calcite.esm.js"></script>
+<link rel="stylesheet" type="text/css" href="https://js.arcgis.com/calcite-components/2.10.1/calcite.css" />
+   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">  
+  <link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/dark/main.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.10.0/viewer.css" integrity="sha512-tYobxYoCZxl0CejYCA8c4w8HRcg3wRoKaGYIQ/2ILqyB4vRqMd/Jmehxod1dQJ2uE/9rDY9pG48isM8SHEAwDQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js" integrity="sha512-3j3VU6WC5rPQB4Ld1jnLV7Kd5xr+cq9avvhwqzbH/taCRNURoeEpoPBK9pDyeukwSxwRPJ8fDgvYXd6SkaZ2TA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.10.0/viewer.js" integrity="sha512-psAniLUS9J4A5KNQiSt9XMNeVSMx/Rz89vQJqeYlOIiTR5WK8zU/8EPwAKt+522eeV04QUzIwX5VrAW10FbdeQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>   
+  <script src="https://js.arcgis.com/4.30/"></script>
+  <style>
+    
+    #viewDiv {
+      position: absolute;
+      top: 0;
+      bottom: 0;      
+      padding: 0;              
+      width: 80%;
+      left:  20%;
+    }   
+
+    /*Searchbar*/
+
+    /*Search bar container*/
+    .container {   
+        margin-top: 5px;
+        width: 100%;                  
+     }
+
+    #search {
+      width: 50%;    
+      border-radius: 0px 0px 0px 0px;   
+      background-color:  black;
+      border-color: #767576;
+    } 
+
+    .btn-outline-warning {      
+      color: #000;
+      border-radius: 0px 0px 0px 0px; 
+      border-color: #FC0;
+      background-color: #FC0;        
+    }
+
+    .btn-outline-warning:hover {
+      color: #000;
+      border-color: #FC0;
+      background-color: #FC0;
+    }
+
+    .calcite-tutorial {
+      --calcite-ui-brand: #FC0;
+      --calcite-ui-brand-hover: #008D52;     
+    }
+
+    .calcite-tutorial calcite-chip {
+      --calcite-ui-foreground-2: var(--calcite-ui-foreground-2);
+      --calcite-ui-text-1: #FC0;
+      opacity:  1;      
+    }  
+
+    #control-reset-el {
+      color: #FC0;
+    }
+
+     #searchDiv {
+      float: right;
+      margin:  5px;
+      width:  auto;
+      border-color: #767576 !important;
+    }
+
+    .esri-input {
+      border: 1px solid #767576 !important;
+    }
+    .esri-search__submit-button {
+      background-color:  #FC0;
+      border:  solid 1px #FC0;
+    }
+
+    .esri-search__submit-button:hover {
+      background-color:  #FC0;
+      border:  solid 1px #FC0;
+    }
+    
+    .esri-icon-search {
+      color: black !important;
+      font-weight: bold !important;
+    }
+
+    h10 {
+      color: #FC0;
+    }
+
+    h11 {
+      font-weight: bolder;
+    }
+
+    #image {
+  	  display: none;
+	  }
+
+	.esri-popup__content img {
+	  cursor: pointer;
+	}
+
+  .esri-ui {
+    z-index: 2 !important;
+  }
+
+	.viewer-title {
+	  color: white;
+	  font-size: 14px;
+	  opacity: 1; 
+	}
+
+  #selectmap {
+    position: absolute;
+    top: 15px;
+    left: 55px;    
+  }
+
+  #searchEtx {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 1 !important;
+
+  }
+
+  /* Custom scrollbar */
+  /* width */
+  ::-webkit-scrollbar {
+    width: 10px !important;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1 !important; 
+  }
+   
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888 !important; 
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555 !important; 
+  }
+  </style>
+</head>
+
+<body class="calcite-mode-dark">    
+  <calcite-shell class="calcite-tutorial">
+    <calcite-shell-panel slot="panel-start">       
+      <calcite-panel>
+<div id="searchDiv"></div>
+<div>
+  <!-- Default Image for ViewerJS -->
+  <img id="image" src="" alt="Picture">
+</div>   
+        <calcite-block heading="Filters" open style="margin-top:0px">
+          <calcite-tooltip-manager slot="control">
+            <calcite-action disabled icon="filter" id="control-reset-el"></calcite-action>
+            <!-- calcite-tooltip reference-element="control-reset-el" position="bottom">
+              Reset to defaults
+            </calcite-tooltip> -->
+          </calcite-tooltip-manager>
+          <!-- <calcite-label>
+            Georeferenced maps only
+            <calcite-radio-group id="control-visited-type-el" width="full">
+              <calcite-radio-group-item value="DESC" checked>Yes</calcite-radio-group-item>
+              <calcite-radio-group-item value="ASC">No</calcite-radio-group-item>
+            </calcite-radio-group>
+          </calcite-label> -->           
+          <calcite-label html-for="georef" layout="inline">
+          <calcite-checkbox id="georef" scale="l"></calcite-checkbox> Show Focal Points
+          </calcite-label>
+          <calcite-label>
+            Browse by Subject
+            <calcite-select id="theme">
+              <calcite-option label="Choose Subject" value="none" selected="true"></calcite-option>
+              <calcite-option label="Buildings" value="Buildings"></calcite-option> 
+              <calcite-option label="Persons" value="Persons"></calcite-option>
+              <calcite-option label="Mines" value="Mines"></calcite-option>
+              <calcite-option label="Industry" value="Indstury"></calcite-option>
+              <calcite-option label="Copper" value="Copper"></calcite-option>
+              <calcite-option label="Manners and Customs" value="Manners and Customs"></calcite-option>
+              <calcite-option label="Mills" value="Mills"></calcite-option>
+              <calcite-option label="Mining" value="Mining"></calcite-option>
+              <calcite-option label="Transportation" value="Tansportation"></calcite-option>
+              <calcite-option label="Winter" value="Winter"></calcite-option>
+              <calcite-option label="Railroads" value="Railraods"></calcite-option>
+              <calcite-option label="Recreation" value="Recreation"></calcite-option>
+              <calcite-option label="Settlements" value="Settlements"></calcite-option>
+              <calcite-option label="Towns and Cities" value="Towns"></calcite-option>
+              <calcite-option label="Water" value="Water"></calcite-option>
+            </calcite-select>
+          </calcite-label>
+              
+        <calcite-panel id="resultsDiv">
+        <h4 class="heading" id="result-block" slot="header-content" style="font-size: var(--calcite-font-size--1); color: var(--calcite-ui-text-1);">
+          Images
+        </h4>
+          <calcite-list id="result-list"></calcite-list>     
+    </calcite-shell-panel>
+  </calcite-shell>
+<div id="viewDiv">
+  <calcite-button id="searchEtx">Search Here</calcite-button>
+  <calcite-select id="selectmap">
+    <calcite-option label="Choose Historical Map" value="none" selected="true"></calcite-option>
+    <calcite-option label="1888 Sanborn Map" value="1888"></calcite-option> 
+    <calcite-option label="1900 Sanborn Map" value="1900"></calcite-option>
+    <calcite-option label="1908 Sanborn Map" value="1908"></calcite-option>
+    <calcite-option label="1917 Sanborn Map" value="1917"></calcite-option>
+    <calcite-option label="1928 Sanborn Map" value="1928"></calcite-option>
+    <calcite-option label="1949 Sanborn Map" value="1949"></calcite-option>
+  </calcite-select>
+</div>
+</body>
+
+<script>
+
+  require([
+    "esri/Map",
+    "esri/views/MapView",
+    "esri/layers/FeatureLayer",
+    "esri/layers/TileLayer",
+    "esri/layers/GraphicsLayer",
+    "esri/symbols/WebStyleSymbol",
+    "esri/Basemap",
+    "esri/rest/support/TopFeaturesQuery",
+    "esri/rest/support/TopFilter",
+    "esri/widgets/Home",
+    "esri/widgets/Search",
+    "esri/core/reactiveUtils",
+    "esri/widgets/Sketch",
+  ], (Map, MapView, FeatureLayer, TileLayer, GraphicsLayer, WebStyleSymbol, Basemap, TopFeaturesQuery, TopFilter, Home, Search, reactiveUtils, Sketch) => (async () => {
+
+     // Create an object to store tile layers
+      const tileLayers = {
+        map_1949: new TileLayer({
+          url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/KeweenawHSDI/Kett_19496_FIPS/MapServer?f=jsapi",
+        }),
+        map_1888: new TileLayer({
+          url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/KeweenawHSDI/KeTT_1888_FIPS/MapServer",
+        }),
+        map_1900: new TileLayer({
+          url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/KeweenawHSDI/KeTT_1900_FIPS/MapServer",
+        }),
+        map_1908: new TileLayer({
+          url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/KeweenawHSDI/KeTT_1908_FIPS/MapServer",
+        }),
+        map_1917: new TileLayer({
+          url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/KeweenawHSDI/KeTT_1917_FIPS/MapServer",    
+        }),
+         map_1928: new TileLayer({
+          url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/KeweenawHSDI/KeTT_1928_FIPS/MapServer",    
+        }), 
+         map_1942: new TileLayer({
+          url: "https://portal1-geo.sabu.mtu.edu:6443/arcgis/rest/services/KeweenawHSDI/KeTT_1942_FIPS/MapServer",    
+        }),        
+         map_1938: new TileLayer({
+          url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/Hosted/38_Aerials/MapServer",    
+        }), 
+         map_1954: new TileLayer({
+          url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/Hosted/mtu1955/MapServer",    
+        }), 
+         map_1955: new TileLayer({
+          url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/Hosted/mtu1955/MapServer",    
+        }), 
+         map_1965: new TileLayer({
+          url: "https://tiles.arcgis.com/tiles/RPhrOu9XQzI31xTa/arcgis/rest/services/MTU_Campus_1965/MapServer",    
+        }),
+      };   
+
+      // Keep track of the currently active tile layers
+      let activeTileLayer = null;
+
+      // Create a style for the indexLayer
+     const renderer = {
+        type: "simple",  // autocasts as new SimpleRenderer()
+        symbol: {
+          type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+          color: [ 255, 128, 0, 0 ],
+          outline: {  // autocasts as new SimpleLineSymbol()
+            width: 1,
+            color: "red"
+          }
+        }
+      }; 
+
+      // renderer for the focal points layer
+      const camera = {
+       type: "simple",
+       symbol: {
+          type: "picture-marker",
+          url: 'camera.svg',
+          width: 20,
+          height: 20
+       }
+      }
+
+      const hmrenderer = {
+        type: "heatmap",
+         colorStops: [
+          { ratio: 0.1, color: "rgba(0, 0, 0, 0)" },             // Fully transparent
+          { ratio: 0.2, color: "rgba(72, 61, 139, 0.7)" },     // Dark Purple (Medium transparency)
+          { ratio: 0.4, color: "rgba(0, 128, 128, 0.7)" },     // Teal (Medium transparency)
+          { ratio: 0.6, color: "rgba(255, 255, 0, 0.8)" },     // Yellow (More opaque)
+          { ratio: 0.8, color: "rgba(255, 105, 180, 0.9)" },   // Pink (Almost fully opaque)
+          { ratio: 1, color: "rgba(255, 20, 147, 1)" }         // Deep Pink (Fully opaque)
+        ],
+      blurRadius: 15,
+      maxPixelIntensity: 100,
+      minPixelIntensity: 0
+    };
+
+    // keep track of anything highlighted
+    let highlightSelect;
+
+    const map = new Map({
+      basemap: "hybrid"      
+    });
+
+    const view = new MapView({
+      container: "viewDiv",
+      map: map,
+      center: [-88.5694, 47.1211],
+      zoom: 7,
+      highlightOptions: {
+      color: "red", // color of the highlight when a feature is selected
+      fillOpacity: 0.1
+      },
+    });
+
+    // create a new graphics layer for the sketch
+    const graphicsLayer = new GraphicsLayer();
+
+    const layer = new FeatureLayer({
+      url:
+        "https://services2.arcgis.com/RPhrOu9XQzI31xTa/arcgis/rest/services/CCHI_Viewsheds_houghton/FeatureServer/0",
+      outFields: ["*"],
+      renderer: renderer,  
+      maxScale: 35.505170,  
+      minScale: 0,   
+      opacity: 0
+    });  
+
+    const pointlayer = new FeatureLayer({
+      url:
+        "https://services2.arcgis.com/RPhrOu9XQzI31xTa/arcgis/rest/services/CCHI_Viewsheds_Houghton_Points/FeatureServer",
+      outFields: ["*"], 
+      renderer: camera,       
+      maxScale: 35.505170,  // Starts appearing at zoom level 18
+      minScale: 4513.988705,  // Matches hmlayer's maxScale
+      visible: false,
+      highlightEnabled: false 
+    });
+    
+
+    const hmlayer = new FeatureLayer({
+      url:
+        "https://services2.arcgis.com/RPhrOu9XQzI31xTa/arcgis/rest/services/CCHI_Viewsheds_Houghton_Points/FeatureServer/1",
+      outFields: ["*"], 
+      renderer: hmrenderer,       
+      maxScale: 4513.988705,  // Disappears at zoom level 18
+      minScale: 591657527.591555,
+      visible: true    
+    });
+
+    // add all of the layers to the map
+    map.addMany([layer, pointlayer, hmlayer]);
+    
+    // dock popup
+    view.popup = {
+      dockEnabled: true,
+      dockOptions: {
+        // Disables the dock button from the popup
+        buttonEnabled: false,
+        // Ignore the default sizes that trigger responsive docking
+        breakpoint: false
+      }
+    };  
+
+    let homeWidget = new Home({
+      view: view
+    });
+
+    view.ui.add(homeWidget, "top-left");
+    view.ui.move("zoom", "top-left");
+
+    var searchWidget = new Search({
+        view: view,
+        container: "searchDiv",
+        allPlaceholder: "Search photos by keyword",
+        includeDefaultSources: false,
+        locationEnabled: false,
+        sources: []
+    });
+
+  /*  // Create a new instance of sketch widget and set its required parameters
+    let sketch = new Sketch({
+      layer: graphicsLayer,
+      view: view, 
+      creationMode: "update",
+      //  container: "bookmarks-container"    
+    });*/
+
+ /*// Setting the sketch's visible elements as below would result
+      // in removing the point and circle tools. It also removes the
+      // lasso-selection tool and settings menu.
+      sketch.visibleElements = {
+        createTools: {
+          point: false,
+          circle: false,
+          polyline: false,
+          polygon: false
+        },
+        selectionTools:{
+          "lasso-selection": false,
+          "rectangle-selection": false
+        },
+        settingsMenu: true
+      }*/
+
+      //view.ui.add(sketch, "top-right");
+
+     /* sketch.on("create", function(event) {
+        //graphicsLayer.removeAll();                         
+        // check if the create event's state has changed to complete indicating
+        // the graphic create operation is completed.
+        if (event.state === "complete") {          
+          const geom = event.graphic.geometry;
+          filterItems(geom);
+          graphicsLayer.removeAll();                      
+        };   
+      });*/
+    
+    // make this layer transparent on click
+    const fplayerView = await view.whenLayerView(pointlayer);
+    fplayerView.highlightOptions = {
+      color: [255, 255, 0, 0],
+      haloOpacity: 0.9,
+      fillOpacity: 0.2
+    };  
+
+    const layerView = await view.whenLayerView(layer);
+
+    function switchMap (year) {      
+        // get variable from attributes for the map year string
+        const mapstr = "map_" + year;
+        console.log(mapstr);
+        // Remove the previously active tile layer, if any
+        if (activeTileLayer) {
+          map.remove(activeTileLayer);
+        }
+        // Retrieve the tile layer from the tileLayers object
+        const tileLayerToAdd = tileLayers[mapstr];
+        if (tileLayerToAdd) {
+          // Add the retrieved tile layer to the map
+          map.add(tileLayerToAdd, 0);
+          activeTileLayer = tileLayerToAdd; // Update the active layer
+        } else {
+          console.log("Tile layer not found for the given map year:", year);
+        }
+      }    
+          
+      // Create a template for the popup
+      var template = {
+      // autocasts as new PopupTemplate()
+      title: "<font color='#FC0'>{title}",        
+      content: [     
+            {
+          type: "media",
+          mediaInfos: [
+            {
+              title: "",
+              type: "image",
+              value: {sourceURL: 'https://cchi-new.mtu.edu/photos/' + '{image_no}.jpg' }
+            }
+          ]        
+            },{
+          type: "fields",
+          fieldInfos: [
+            {
+              fieldName: "datecreated",
+              label: "Date"
+            },
+            {
+              fieldName: "collection",
+              label: "Collection"
+            },
+            {
+              fieldName: "description",
+              label: "Description"
+            },
+             {
+              fieldName: "subjects",
+              label: "Subjets"
+            },
+            {
+              fieldName: "access",
+              label: "Access"
+            },
+            {
+              fieldName: "notes",
+              label: "Notes"
+            },
+            {
+              fieldName: "contributor",
+              label: "Contributor"
+            },
+            {
+              fieldName: "title",
+              label: "title"
+            },
+            {
+              fieldName: "portalUrl",
+              label: "PortalUrl"
+            },
+            {
+              fieldName: "resolution",
+              label: "Resolution (dpi)"
+            },            
+          ]
+        }, 
+      ]
+    };
+
+function setFeatureLayerFilter(expression) {
+  layer.definitionExpression = expression;  
+} 
+
+    // Set the popup template on the layer
+    layer.popupTemplate = template;
+    pointlayer.popupTemplate = template;     
+
+   // const controlVisitedTypeEl = document.getElementById("control-visited-type-el");
+    const controlThemeEl = document.getElementById("theme");
+    const controlGeoEl = document.getElementById("georef");
+    const controlMapEl = document.getElementById("selectmap");
+    const controlYearEl = document.getElementById("endYear");
+   //const controlCountPerStateEl = document.getElementById("control-count-per-state-el");
+    const controlResetEl = document.getElementById("control-reset-el");
+
+  //  controlVisitedTypeEl.addEventListener("calciteRadioGroupChange", async (event) => { orderBy = event.target.value, filterItems() });
+    controlThemeEl.addEventListener("calciteSelectChange", async (event) => { theme = event.target.value, filterItems() });
+    controlMapEl.addEventListener("calciteSelectChange", async (event) => { mapyear = event.target.value, filterItems() });
+    controlGeoEl.addEventListener("calciteCheckboxChange", async (event) => {
+      if ($('#georef').prop("checked")) {
+        pointlayer.visible = true;
+        console.log('checked');
+      }
+
+      if (!$('#georef').prop("checked")) {
+        pointlayer.visible = false;
+        console.log('not checked');
+      }  
+      
+    });
+
+
+   //  controlYearEl.addEventListener("calciteInputChange", async (event) => {
+   //   var startYearVal = $("#startYear").val();
+   //   var endYearVal = $("#startYear").val();
+   //   if (startYearVal != "" && endYearVal != "") {     
+   //   year = event.target.value, filterItems()
+   //   } 
+   // });
+    
+  //  controlCountPerStateEl.addEventListener("calciteSliderChange", async (event) => { count = event.target.value, filterItems() });
+ //   controlResetEl.addEventListener("click", async () => resetFilters());
+
+    // When the user clicks the search button filter features
+    $( ".esri-search__submit-button" ).click(function() {
+      filterItems();    
+    });
+
+    // When the user clicks the search button filter features
+    $( "#searchEtx" ).click(function() {
+      const currentExtent = view.extent; 
+      filterItems(currentExtent);    
+    });
+
+    // When the user clicks the clear button query all features
+    $(document).on('click','.esri-search__clear-button', function(){   	
+    	var searchVal = $( "#searchDiv-input" ).val();	
+    	if (searchVal != '') {
+    		$( "#searchDiv-input" ).val("");
+    		console.log(searchVal);
+    		filterItems();
+    	}     
+ 	}); 
+
+	// if users hits enter perform the search   
+	$( ".esri-input" ).keyup(function(event) {
+	    // Number 13 is the "Enter" key on the keyboard
+	    if (event.keyCode === 13) {
+	      // Cancel the default action, if needed
+	      event.preventDefault();
+	      // Trigger the button element with a click
+	      $( ".esri-search__submit-button" ).click();
+	    }        
+	 });    
+
+    const countDefault = 1;
+    const orderByDefault = "DESC"
+    const yearDefault = "TOTAL"
+
+    let count = countDefault;
+    let orderBy = orderByDefault;
+    let year = yearDefault;
+
+    async function filterItems(geom) {
+      view.popup.close();
+      // Create an empty array of search strings
+      var searchStrings = [];
+      var searchVal = $( "#searchDiv-input" ).val();
+      var themeVal = $("#theme").val();
+      var mapVal = $("#selectmap").val();
+      var startYearVal = $("#startYear").val();
+      var endYearVal = $("#endYear").val();
+      console.log(searchVal, themeVal);
+      let query = layer.createQuery();
+      query.returnGeometry = true;
+      if (searchVal != '') {
+        var searchValString = "(Upper(title) LIKE '%" + searchVal.toUpperCase() + "%' OR Upper(subject) LIKE '%"+ searchVal.toUpperCase() + "%' OR Upper(desc_) LIKE '%" + searchVal + "%' OR Upper(image_no) LIKE '%" + searchVal + "%' OR Upper(date2) LIKE '%" + searchVal + "')"; 
+        searchStrings.push(searchValString);            
+      } /*else if (searchVal == '') {
+      	query.where = "1=1";
+      } */
+
+      if (themeVal != 'none') {
+      	var themeString = "subject like '%" + themeVal + "%'";
+        searchStrings.push(themeString);
+      }     
+
+      if (mapVal != 'none') {
+        var mapString = "mapyear =  '" + mapVal + "'";
+        searchStrings.push(mapString);
+      }         
+
+      // Create a query string from the searchStrings array
+      var queryString = searchStrings.join(" AND ");
+      // Execute the query from the query string
+      query.where = queryString;
+      query.geometry = geom;
+      spatialRelationship = "intersects";
+      // Also update the heatmap and point layers
+      hmlayer.definitionExpression = queryString;
+      //pointlayer.definitionExpression = queryString;
+
+     // pointlayer.definitionExpression = query;
+
+      document.getElementById("result-list").innerHTML = "";
+      document.getElementById("result-block").open = true;
+
+      const results = await layer.queryFeatures(query);
+
+      graphics = results.features;    
+
+      /*// Zoom to the result of the features
+      if (graphics.length > 0) {
+        var extent = results.features[0].geometry.extent;
+        results.features.forEach(function(feature) {
+            extent = extent.union(feature.geometry.extent);
+        })
+
+       view.goTo({ center: extent.expand(1.3) }, { duration: 400 }); 
+   	  }*/
+
+      document.getElementById("result-block").innerHTML = "Results (<h10>" + graphics.length + "</h10>)"; 
+
+      graphics.forEach((result, index) => {
+        const attributes = result.attributes;        
+        const item = document.createElement("calcite-list-item");
+        const chip = document.createElement("calcite-chip");
+        const icon = document.createElement("calcite-icon");
+        icon.icon = "arrowLeft";
+        icon.scale = "s";        
+        chip.scale = "s";
+        chip.innerText = "";
+        chip.icon = "image";
+        chip.icon.className = "icon-class";
+        chip.slot = "content-end";        
+        item.label = attributes.title;
+        item.value = index;
+        item.description = attributes.date2;
+        item.addEventListener("click", () => resultClickHandler(result, index));
+        item.appendChild(chip);       
+        document.getElementById("result-list").appendChild(item);
+      });
+
+      query.orderByFields = [""];
+      const objectIds = await layer.queryObjectIds(query);
+      layerView.filter = { objectIds };
+
+     // determineResetActionState();
+    }
+
+    function resultClickHandler(result, index) {
+      const popup = graphics && graphics[parseInt(index, 10)];
+      if (popup) {
+        view.popup.open({
+          features: [popup],
+          location: result.geometry.centroid
+        });       
+        const extent = result.geometry.extent;
+        // when clicking on a record zoom to its extent
+        view.goTo({ center: extent.expand(1.5) }, { duration: 400 });
+
+      }
+      const imageID = result.attributes.image_no;
+      const mapyear = result.attributes.mapyear;
+     // layer.definitionExpression = "image_no =" + "'" + imageID + "'";
+     // hmlayer.definitionExpression = "image_no =" + "'" + imageID + "'";
+      //pointlayer.definitionExpression = "image_no =" + "'" + imageID + "'";
+     
+
+      // Change the map
+      switchMap(mapyear);
+
+      // Update the image in the Viewer
+      updateViewer();
+    };
+
+    reactiveUtils.watch(
+        () => view.popup.selectedFeature,
+        (graphic) => {
+          if (graphic) {
+        view.whenLayerView(layer).then((layerView) => {
+        const id = graphic.attributes.image_no;
+        const year = graphic.attributes.mapyear;
+        switchMap(year);
+        const queryVS = layer.createQuery();
+        queryVS.where = "image_no =" + "'" + id + "'";
+        layer.queryFeatures(queryVS).then((result) => {
+          // if a feature is already highlighted, then remove the highlight
+          if (highlightSelect) {
+            highlightSelect.remove();
+          }
+
+          // the feature to be highlighted
+          const feature = result.features[0];
+
+          // use the objectID to highlight the feature
+          highlightSelect = layerView.highlight(feature.attributes["OBJECTID"]);
+        });
+      });
+          }
+        }
+      );  
+
+    function updateViewer() {     
+      reactiveUtils.watch(
+        () => view.popup.selectedFeature,
+        (graphic) => {
+          if (graphic) {
+              var thumbUrl = graphic.attributes.image_no;
+              var itemTitle = graphic.attributes.title; 
+              document.getElementById('image').src='https://cchi-new.mtu.edu/photos/' + thumbUrl + '.jpg';
+              document.getElementById('image').alt=itemTitle;    
+              viewer.update();
+          }
+        }
+      );     
+    }
+
+    function determineResetActionState() {
+      if (searchVal =! '') {
+        controlResetEl.removeAttribute("disabled");
+        controlResetEl.indicator = true;
+      }
+      else {
+        controlResetEl.disabled = true;
+        controlResetEl.removeAttribute("indicator");
+      }
+    }
+
+    function resetFilters() {
+      count = countDefault;
+      orderBy = orderByDefault;
+      year = yearDefault;
+
+      const activeRadioGroupItem = document.querySelector(`calcite-radio-group-item[value=${orderByDefault}]`)
+      activeRadioGroupItem.checked = true;
+      controlYearEl.value = yearDefault;
+      controlCountPerStateEl.value = countDefault;
+
+      filterItems();
+    }
+
+     // setup a new viewer to display the map scans
+    var viewer = new Viewer(document.getElementById('image'), {
+      navbar: false,
+      inline: false,
+      toolbar: {
+        zoomIn: 1,
+        zoomOut: 1,
+        oneToOne: 1,
+        reset: 1,
+        prev: 0,
+        play: {
+          show: 1,
+          size: 'large',
+        },
+        next: 0,
+        rotateLeft: 1,
+        rotateRight: 1,
+        flipHorizontal: 1,
+        flipVertical: 1,
+      },
+      viewed() {
+        //viewer.zoomTo(1);
+      },
+    });  
+
+    // Remove the zoom-to popup action
+//     view.popup.actions = []; 
+
+    /*// Actions for the popup
+    var requestAction = {
+      // This text is displayed as a tooltip
+      title: "Request Item",
+      // The ID by which to reference the action in the event handler
+      id: "req-item",
+      // Sets the icon font used to style the action button
+      className: "esri-icon-launch-link-external"
+    };
+    // Adds the custom action to the popup.
+    view.popup.actions.push(requestAction);
+
+    // This event fires for each click on any action
+    view.popup.on("trigger-action", function(event){
+      // If the request item button is clicked launch the Google form
+      if(event.action.id === "req-item"){
+        // Get the file name from the current popup
+        var title = view.popup.selectedFeature.attributes.title;
+        var id = view.popup.selectedFeature.attributes.fid;
+        window.open(
+                  'https://docs.google.com/forms/d/e/1FAIpQLSeF2x2DCePE_m6HRsUSsf6pFaEhnMN-4cc3C79OFpvSIRv1mA/viewform?usp=pp_url&entry.1039013080=' + title + '(' + id + ')','"_blank"');
+      }
+    });  */
+
+  // when the user clicks the thumbnail, open the viewer
+  $(document).on('click', '.esri-features img', function(){   	
+    updateViewer();
+    viewer.show();
+  });
+
+  const mapPicker = document.getElementById("selectmap");
+
+  mapPicker.addEventListener("calciteSelectChange", async (event) => { 
+    console.log(event.target.value);
+
+    switchMap(event.target.value);
+
+  });
+
+  view.on("click", (event) => {
+  // only include graphics from the layer in the hitTest
+  const opts = {
+    include: layer
+  }
+  // check for a click on the index layer
+  view.hitTest(event, opts).then((response) => {
+    // check if a feature is returned from the index layer
+    if (response.results.length) {
+      const graphic = response.results[0].graphic; 
+    }    
+  });
+});
+    filterItems();
+  })());
+</script>
+
+</html>
