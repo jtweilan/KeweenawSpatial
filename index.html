@@ -9,11 +9,11 @@
    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">  
   <link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/dark/main.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.10.0/viewer.css" integrity="sha512-tYobxYoCZxl0CejYCA8c4w8HRcg3wRoKaGYIQ/2ILqyB4vRqMd/Jmehxod1dQJ2uE/9rDY9pG48isM8SHEAwDQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.css" integrity="sha512-eG8C/4QWvW9MQKJNw2Xzr0KW7IcfBSxljko82RuSs613uOAg/jHEeuez4dfFgto1u6SRI/nXmTr9YPCjs1ozBg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js" integrity="sha512-3j3VU6WC5rPQB4Ld1jnLV7Kd5xr+cq9avvhwqzbH/taCRNURoeEpoPBK9pDyeukwSxwRPJ8fDgvYXd6SkaZ2TA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.10.0/viewer.js" integrity="sha512-psAniLUS9J4A5KNQiSt9XMNeVSMx/Rz89vQJqeYlOIiTR5WK8zU/8EPwAKt+522eeV04QUzIwX5VrAW10FbdeQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>   
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js" integrity="sha512-EC3CQ+2OkM+ZKsM1dbFAB6OGEPKRxi6EDRnZW9ys8LghQRAq6cXPUgXCCujmDrXdodGXX9bqaaCRtwj4h4wgSQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>  
   <script src="https://js.arcgis.com/4.30/"></script>
   <style>
     
@@ -180,9 +180,9 @@
               <calcite-radio-group-item value="ASC">No</calcite-radio-group-item>
             </calcite-radio-group>
           </calcite-label> -->           
-          <calcite-label html-for="georef" layout="inline">
+          <!-- <calcite-label html-for="georef" layout="inline">
           <calcite-checkbox id="georef" scale="l"></calcite-checkbox> Show Focal Points
-          </calcite-label>
+          </calcite-label> -->
           <calcite-label>
             Browse by Subject
             <calcite-select id="theme">
@@ -361,7 +361,7 @@
       renderer: camera,       
       maxScale: 35.505170,  // Starts appearing at zoom level 18
       minScale: 4513.988705,  // Matches hmlayer's maxScale
-      visible: false,
+      visible: true,
       highlightEnabled: false 
     });
     
@@ -406,43 +406,7 @@
         sources: []
     });
 
-  /*  // Create a new instance of sketch widget and set its required parameters
-    let sketch = new Sketch({
-      layer: graphicsLayer,
-      view: view, 
-      creationMode: "update",
-      //  container: "bookmarks-container"    
-    });*/
-
- /*// Setting the sketch's visible elements as below would result
-      // in removing the point and circle tools. It also removes the
-      // lasso-selection tool and settings menu.
-      sketch.visibleElements = {
-        createTools: {
-          point: false,
-          circle: false,
-          polyline: false,
-          polygon: false
-        },
-        selectionTools:{
-          "lasso-selection": false,
-          "rectangle-selection": false
-        },
-        settingsMenu: true
-      }*/
-
-      //view.ui.add(sketch, "top-right");
-
-     /* sketch.on("create", function(event) {
-        //graphicsLayer.removeAll();                         
-        // check if the create event's state has changed to complete indicating
-        // the graphic create operation is completed.
-        if (event.state === "complete") {          
-          const geom = event.graphic.geometry;
-          filterItems(geom);
-          graphicsLayer.removeAll();                      
-        };   
-      });*/
+  
     
     // make this layer transparent on click
     const fplayerView = await view.whenLayerView(pointlayer);
@@ -554,31 +518,7 @@ function setFeatureLayerFilter(expression) {
   //  controlVisitedTypeEl.addEventListener("calciteRadioGroupChange", async (event) => { orderBy = event.target.value, filterItems() });
     controlThemeEl.addEventListener("calciteSelectChange", async (event) => { theme = event.target.value, filterItems() });
     controlMapEl.addEventListener("calciteSelectChange", async (event) => { mapyear = event.target.value, filterItems() });
-    controlGeoEl.addEventListener("calciteCheckboxChange", async (event) => {
-      if ($('#georef').prop("checked")) {
-        pointlayer.visible = true;
-        console.log('checked');
-      }
-
-      if (!$('#georef').prop("checked")) {
-        pointlayer.visible = false;
-        console.log('not checked');
-      }  
-      
-    });
-
-
-   //  controlYearEl.addEventListener("calciteInputChange", async (event) => {
-   //   var startYearVal = $("#startYear").val();
-   //   var endYearVal = $("#startYear").val();
-   //   if (startYearVal != "" && endYearVal != "") {     
-   //   year = event.target.value, filterItems()
-   //   } 
-   // });
-    
-  //  controlCountPerStateEl.addEventListener("calciteSliderChange", async (event) => { count = event.target.value, filterItems() });
- //   controlResetEl.addEventListener("click", async () => resetFilters());
-
+   
     // When the user clicks the search button filter features
     $( ".esri-search__submit-button" ).click(function() {
       filterItems();    
@@ -667,15 +607,7 @@ function setFeatureLayerFilter(expression) {
 
       graphics = results.features;    
 
-      /*// Zoom to the result of the features
-      if (graphics.length > 0) {
-        var extent = results.features[0].geometry.extent;
-        results.features.forEach(function(feature) {
-            extent = extent.union(feature.geometry.extent);
-        })
 
-       view.goTo({ center: extent.expand(1.3) }, { duration: 400 }); 
-   	  }*/
 
       document.getElementById("result-block").innerHTML = "Results (<h10>" + graphics.length + "</h10>)"; 
 
@@ -720,11 +652,7 @@ function setFeatureLayerFilter(expression) {
       }
       const imageID = result.attributes.image_no;
       const mapyear = result.attributes.mapyear;
-     // layer.definitionExpression = "image_no =" + "'" + imageID + "'";
-     // hmlayer.definitionExpression = "image_no =" + "'" + imageID + "'";
-      //pointlayer.definitionExpression = "image_no =" + "'" + imageID + "'";
      
-
       // Change the map
       switchMap(mapyear);
 
@@ -759,19 +687,15 @@ function setFeatureLayerFilter(expression) {
         }
       );  
 
-    function updateViewer() {     
-      reactiveUtils.watch(
-        () => view.popup.selectedFeature,
-        (graphic) => {
-          if (graphic) {
-              var thumbUrl = graphic.attributes.image_no;
-              var itemTitle = graphic.attributes.title; 
-              document.getElementById('image').src='https://cchi-new.mtu.edu/photos/' + thumbUrl + '.jpg';
-              document.getElementById('image').alt=itemTitle;    
-              viewer.update();
-          }
-        }
-      );     
+    function updateViewer() {
+      const graphic = view.popup.selectedFeature;
+      if (graphic) {
+          var thumbUrl = graphic.attributes.image_no;
+          var itemTitle = graphic.attributes.title; 
+          document.getElementById('image').src = 'https://cchi-new.mtu.edu/photos/' + thumbUrl + '.jpg';
+          document.getElementById('image').alt = itemTitle;    
+          viewer.update();
+      }
     }
 
     function determineResetActionState() {
@@ -798,6 +722,7 @@ function setFeatureLayerFilter(expression) {
       filterItems();
     }
 
+
      // setup a new viewer to display the map scans
     var viewer = new Viewer(document.getElementById('image'), {
       navbar: false,
@@ -823,38 +748,15 @@ function setFeatureLayerFilter(expression) {
       },
     });  
 
-    // Remove the zoom-to popup action
-//     view.popup.actions = []; 
-
-    /*// Actions for the popup
-    var requestAction = {
-      // This text is displayed as a tooltip
-      title: "Request Item",
-      // The ID by which to reference the action in the event handler
-      id: "req-item",
-      // Sets the icon font used to style the action button
-      className: "esri-icon-launch-link-external"
-    };
-    // Adds the custom action to the popup.
-    view.popup.actions.push(requestAction);
-
-    // This event fires for each click on any action
-    view.popup.on("trigger-action", function(event){
-      // If the request item button is clicked launch the Google form
-      if(event.action.id === "req-item"){
-        // Get the file name from the current popup
-        var title = view.popup.selectedFeature.attributes.title;
-        var id = view.popup.selectedFeature.attributes.fid;
-        window.open(
-                  'https://docs.google.com/forms/d/e/1FAIpQLSeF2x2DCePE_m6HRsUSsf6pFaEhnMN-4cc3C79OFpvSIRv1mA/viewform?usp=pp_url&entry.1039013080=' + title + '(' + id + ')','"_blank"');
-      }
-    });  */
-
-  // when the user clicks the thumbnail, open the viewer
-  $(document).on('click', '.esri-features img', function(){   	
-    updateViewer();
-    viewer.show();
-  });
+    
+ $(document).ready(function() {
+    $(document).on('click', '.esri-features img', function(){ 
+        setTimeout(function() {
+            updateViewer();
+            viewer.show();
+        }, 100); // Add a small delay, e.g., 100ms
+    });
+});
 
   const mapPicker = document.getElementById("selectmap");
 
