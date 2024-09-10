@@ -26,7 +26,37 @@
       left:  20%;
     }   
 
-    /*Searchbar*/
+    /*Navbar*/
+    .navbar {
+      height: 56px;
+    }
+    .navbar-brand {
+      padding: 0;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;   
+      color: white !important; 
+    }
+    /*Navbar links*/
+    .navbar-light .navbar-nav .nav-link {
+      color: #d9dde0;
+      font-size: 13px;
+    }
+    .navbar-light .navbar-nav .nav-link:visited {
+      color: #d9dde0;  
+    }
+
+    .navbar-light .navbar-nav .nav-link:hover {
+      color: white;  
+    }
+
+    /*Navbar background color*/
+    .bg-light {
+      background: #353535 !important;
+      border-bottom: solid 1px #555;
+    }   
 
     /*Search bar container*/
     .container {   
@@ -154,14 +184,42 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #555 !important; 
   }
+
+  .thumbnail {
+     width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left: 10px; /* Adjust as needed */
+    float: right;
+  }
   </style>
 </head>
 
-<body class="calcite-mode-dark">    
+<body class="calcite-mode-dark">
+<nav class="navbar navbar-expand-md navbar-light bg-light">
+  <a class="navbar-brand" href="https://mtugrf.github.io/mapcatalog/" target="_blank" rel="noopener">
+    <img src="husky.svg" width="50" height="50" class="d-inline-block align-top" alt="">
+      &nbsp;CCHI Spatial Image Catalog
+  </a>
+  <div class="collapse navbar-collapse" id="navbarNav" style="">
+        <ul class="navbar-nav mr-auto">           
+        </ul>
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="https://portal1-geo.sabu.mtu.edu/mtuarcgis/home/" target="_blank" rel="noopener">CCHI</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="https://www.mtu.edu/social-sciences/" target="_blank" rel="noopener">Michigan Tech Archives</a>
+            </li>           
+        </ul>
+    </div>
+</nav>
+  <calcite-shell content-behind class="calcite-tutorial" style="height: auto;margin-top: 56px">    
   <calcite-shell class="calcite-tutorial">
     <calcite-shell-panel slot="panel-start">       
       <calcite-panel>
-<div id="searchDiv"></div>
+<!-- <div id="searchDiv"></div> -->
 <div>
   <!-- Default Image for ViewerJS -->
   <img id="image" src="" alt="Picture">
@@ -231,20 +289,19 @@
   require([
     "esri/Map",
     "esri/views/MapView",
+    "esri/Graphic",
     "esri/layers/FeatureLayer",
     "esri/layers/TileLayer",
-    "esri/layers/GraphicsLayer",
-    "esri/symbols/WebStyleSymbol",
-    "esri/Basemap",
-    "esri/rest/support/TopFeaturesQuery",
-    "esri/rest/support/TopFilter",
+    "esri/layers/GraphicsLayer",    
+    "esri/Basemap",    
     "esri/widgets/Home",
     "esri/widgets/Search",
     "esri/core/reactiveUtils",
-    "esri/widgets/Sketch",
-  ], (Map, MapView, FeatureLayer, TileLayer, GraphicsLayer, WebStyleSymbol, Basemap, TopFeaturesQuery, TopFilter, Home, Search, reactiveUtils, Sketch) => (async () => {
+    "esri/geometry/Point",
+    "esri/rest/support/Query"       
+  ], (Map, MapView, Graphic, FeatureLayer, TileLayer, GraphicsLayer, Basemap, Home, Search, reactiveUtils, Point, Query) => (async () => {
 
-     // Create an object to store tile layers
+      // Create an object to store tile layers
       const tileLayers = {
         map_1949: new TileLayer({
           url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/KeweenawHSDI/Kett_19496_FIPS/MapServer?f=jsapi",
@@ -406,7 +463,61 @@
         sources: []
     });
 
-  
+     let pinGraphic; // To hold the pin graphic
+
+    // Create SVG symbol for the pin
+    const svgPin = {
+      type: "simple-marker",  // autocasts as new SimpleMarkerSymbol()
+      path: "M8 0C3.582 0 0 3.582 0 8c0 5.25 8 12 8 12s8-6.75 8-12c0-4.418-3.582-8-8-8zM8 11a3 3 0 110-6 3 3 0 010 6z", // SVG path
+      color: [226, 119, 40],
+      size: "25px",
+      outline: {
+        color: [255, 255, 255],
+        width: 1
+      }
+    };
+
+    // Add click event to the map view
+    view.on("click", function(event) {
+      // Create a point where the map was clicked
+      const point = new Point({
+        longitude: event.mapPoint.longitude,
+        latitude: event.mapPoint.latitude
+      });
+
+      // Remove the previous pin if it exists
+      if (pinGraphic) {
+        view.graphics.remove(pinGraphic);
+      }
+
+      // Create a new graphic for the pin
+      pinGraphic = new Graphic({
+        geometry: point,
+        symbol: svgPin
+      });
+
+      // Add the new pin to the view
+      view.graphics.add(pinGraphic);
+
+      // Query for intersecting polygons
+      queryIntersectingPolygons(point);
+    });
+
+    // Function to query intersecting polygons
+    function queryIntersectingPolygons(point) {
+      const query = new Query();
+      query.geometry = point;  // Use the point as the geometry
+      query.spatialRelationship = "intersects";  // Find polygons that intersect with the point
+      query.returnGeometry = true;
+      query.outFields = ["*"];  // Get all fields
+
+      layer.queryFeatures(query).then(function(results) {
+        // Handle the intersecting polygons
+        console.log("Intersecting polygons:", results.features);        
+      }).catch(function(error) {
+        console.error("Error querying polygons: ", error);
+      });
+    }
     
     // make this layer transparent on click
     const fplayerView = await view.whenLayerView(pointlayer);
@@ -571,10 +682,10 @@ function setFeatureLayerFilter(expression) {
       console.log(searchVal, themeVal);
       let query = layer.createQuery();
       query.returnGeometry = true;
-      if (searchVal != '') {
+     /* if (searchVal != '') {
         var searchValString = "(Upper(title) LIKE '%" + searchVal.toUpperCase() + "%' OR Upper(subject) LIKE '%"+ searchVal.toUpperCase() + "%' OR Upper(desc_) LIKE '%" + searchVal + "%' OR Upper(image_no) LIKE '%" + searchVal + "%' OR Upper(date2) LIKE '%" + searchVal + "')"; 
         searchStrings.push(searchValString);            
-      } /*else if (searchVal == '') {
+      } *//*else if (searchVal == '') {
       	query.where = "1=1";
       } */
 
@@ -609,25 +720,34 @@ function setFeatureLayerFilter(expression) {
 
 
 
-      document.getElementById("result-block").innerHTML = "Results (<h10>" + graphics.length + "</h10>)"; 
+      document.getElementById("result-block").innerHTML = "<h5>Photos in this area (" + graphics.length + ")</h5>"; 
 
       graphics.forEach((result, index) => {
         const attributes = result.attributes;        
         const item = document.createElement("calcite-list-item");
         const chip = document.createElement("calcite-chip");
         const icon = document.createElement("calcite-icon");
+         const thumbnail = document.createElement("img");
         icon.icon = "arrowLeft";
         icon.scale = "s";        
         chip.scale = "s";
         chip.innerText = "";
         chip.icon = "image";
         chip.icon.className = "icon-class";
-        chip.slot = "content-end";        
+        thumbnail.slot = "content-start";        
         item.label = attributes.title;
         item.value = index;
         item.description = attributes.date2;
+       
+  
+  // Set the image source to the desired URL
+  thumbnail.src = 'https://cchi-new.mtu.edu/photos/' + attributes.image_no + '.jpg';
+  
+  // Add a class for styling
+  thumbnail.className = "thumbnail";
         item.addEventListener("click", () => resultClickHandler(result, index));
-        item.appendChild(chip);       
+        item.appendChild(chip); 
+        item.appendChild(thumbnail);       
         document.getElementById("result-list").appendChild(item);
       });
 
