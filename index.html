@@ -132,6 +132,10 @@
       font-weight: bolder;
     }
 
+    h5 {
+      color: white;
+    }
+
     #image {
   	  display: none;
 	  }
@@ -224,44 +228,7 @@
   <!-- Default Image for ViewerJS -->
   <img id="image" src="" alt="Picture">
 </div>   
-        <calcite-block heading="Filters" open style="margin-top:0px">
-          <calcite-tooltip-manager slot="control">
-            <calcite-action disabled icon="filter" id="control-reset-el"></calcite-action>
-            <!-- calcite-tooltip reference-element="control-reset-el" position="bottom">
-              Reset to defaults
-            </calcite-tooltip> -->
-          </calcite-tooltip-manager>
-          <!-- <calcite-label>
-            Georeferenced maps only
-            <calcite-radio-group id="control-visited-type-el" width="full">
-              <calcite-radio-group-item value="DESC" checked>Yes</calcite-radio-group-item>
-              <calcite-radio-group-item value="ASC">No</calcite-radio-group-item>
-            </calcite-radio-group>
-          </calcite-label> -->           
-          <!-- <calcite-label html-for="georef" layout="inline">
-          <calcite-checkbox id="georef" scale="l"></calcite-checkbox> Show Focal Points
-          </calcite-label> -->
-          <calcite-label>
-            Browse by Subject
-            <calcite-select id="theme">
-              <calcite-option label="Choose Subject" value="none" selected="true"></calcite-option>
-              <calcite-option label="Buildings" value="Buildings"></calcite-option> 
-              <calcite-option label="Persons" value="Persons"></calcite-option>
-              <calcite-option label="Mines" value="Mines"></calcite-option>
-              <calcite-option label="Industry" value="Indstury"></calcite-option>
-              <calcite-option label="Copper" value="Copper"></calcite-option>
-              <calcite-option label="Manners and Customs" value="Manners and Customs"></calcite-option>
-              <calcite-option label="Mills" value="Mills"></calcite-option>
-              <calcite-option label="Mining" value="Mining"></calcite-option>
-              <calcite-option label="Transportation" value="Tansportation"></calcite-option>
-              <calcite-option label="Winter" value="Winter"></calcite-option>
-              <calcite-option label="Railroads" value="Railraods"></calcite-option>
-              <calcite-option label="Recreation" value="Recreation"></calcite-option>
-              <calcite-option label="Settlements" value="Settlements"></calcite-option>
-              <calcite-option label="Towns and Cities" value="Towns"></calcite-option>
-              <calcite-option label="Water" value="Water"></calcite-option>
-            </calcite-select>
-          </calcite-label>
+        
               
         <calcite-panel id="resultsDiv">
         <h4 class="heading" id="result-block" slot="header-content" style="font-size: var(--calcite-font-size--1); color: var(--calcite-ui-text-1);">
@@ -463,7 +430,7 @@
         sources: []
     });
 
-     let pinGraphic; // To hold the pin graphic
+    let pinGraphic; // To hold the pin graphic
 
     // Create SVG symbol for the pin
     const svgPin = {
@@ -513,7 +480,9 @@
 
       layer.queryFeatures(query).then(function(results) {
         // Handle the intersecting polygons
-        console.log("Intersecting polygons:", results.features);        
+        console.log("Intersecting polygons:", results);
+        filterItems(point);
+
       }).catch(function(error) {
         console.error("Error querying polygons: ", error);
       });
@@ -619,7 +588,7 @@ function setFeatureLayerFilter(expression) {
     pointlayer.popupTemplate = template;     
 
    // const controlVisitedTypeEl = document.getElementById("control-visited-type-el");
-    const controlThemeEl = document.getElementById("theme");
+   // const controlThemeEl = document.getElementById("theme");
     const controlGeoEl = document.getElementById("georef");
     const controlMapEl = document.getElementById("selectmap");
     const controlYearEl = document.getElementById("endYear");
@@ -627,7 +596,7 @@ function setFeatureLayerFilter(expression) {
     const controlResetEl = document.getElementById("control-reset-el");
 
   //  controlVisitedTypeEl.addEventListener("calciteRadioGroupChange", async (event) => { orderBy = event.target.value, filterItems() });
-    controlThemeEl.addEventListener("calciteSelectChange", async (event) => { theme = event.target.value, filterItems() });
+   // controlThemeEl.addEventListener("calciteSelectChange", async (event) => { theme = event.target.value, filterItems() });
     controlMapEl.addEventListener("calciteSelectChange", async (event) => { mapyear = event.target.value, filterItems() });
    
     // When the user clicks the search button filter features
@@ -637,6 +606,10 @@ function setFeatureLayerFilter(expression) {
 
     // When the user clicks the search button filter features
     $( "#searchEtx" ).click(function() {
+      // Remove the previous pin if it exists
+      if (pinGraphic) {
+        view.graphics.remove(pinGraphic);
+      }
       const currentExtent = view.extent; 
       filterItems(currentExtent);    
     });
@@ -689,11 +662,11 @@ function setFeatureLayerFilter(expression) {
       	query.where = "1=1";
       } */
 
-      if (themeVal != 'none') {
+     /* if (themeVal != 'none') {
       	var themeString = "subject like '%" + themeVal + "%'";
         searchStrings.push(themeString);
       }     
-
+*/
       if (mapVal != 'none') {
         var mapString = "mapyear =  '" + mapVal + "'";
         searchStrings.push(mapString);
