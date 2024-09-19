@@ -115,13 +115,13 @@
       border: 1px solid #767576 !important;
     }
     .esri-search__submit-button {
-      background-color:  gray;
-      border:  solid 1px gray;
+      background-color: #009af2;
+      border: solid 1px #009af2;
     }
 
     .esri-search__submit-button:hover {
-      background-color:  #FC0;
-      border:  solid 1px #FC0;
+      background-color: #007ac2;
+      border:  solid 1px #007ac2;
     }
     
     .esri-icon-search {
@@ -162,14 +162,16 @@
   #selectmap {
     position: absolute;
     top: 15px;
-    left: 55px;    
+    right: 15px;    
   }
 
   #searchEtx {
     position: absolute;
     top: 15px;
-    right: 15px;
+    left: 55px;
     z-index: 1 !important;
+   --calcite-color-background: black;
+   color: black !important;
 
   }
 
@@ -208,7 +210,7 @@
 <body class="calcite-mode-dark">
 <nav class="navbar navbar-expand-md navbar-light bg-light">
   <a class="navbar-brand" href="https://mtugrf.github.io/mapcatalog/" target="_blank" rel="noopener">
-    <img src="photo3.svg" width="80" height="60" class="d-inline-block align-top" style="margin-bottom: 10px" alt="">
+    <img src="photo3.svg" width="50" height="60" class="d-inline-block align-top" style="margin-bottom: 0px" alt="">
       &nbsp;&nbsp;CCHI Spatial Image Catalog
   </a>
   <div class="collapse navbar-collapse" id="navbarNav" style="">
@@ -243,18 +245,18 @@
         <h4 class="heading" id="result-block" slot="header-content" style="font-size: var(--calcite-font-size--1); color: var(--calcite-ui-text-1);">
          
         </h4>
-        <calcite-notice open icon="layers-reference" id="instruction">
-    <div slot="title">Using the application</div>
-    <div slot="message">Click anywhere on the map to see images for that location. OR use the search bar to locate images by keyword.</div>
-    <calcite-link slot="link" title="my action">
-        Read more
+        <calcite-notice open icon="information-f" id="instruction">
+    <div slot="title"><b>Using the application</b></div>
+    <div slot="message">Click anywhere on the map to see images for that location. OR use the search bar to locate images by keyword. OR use the <b>Search Here</b> button to locate images within the current map extent.</div>
+    <calcite-link slot="link" title="Take a Tour">
+        Take a Tour
     </calcite-link>
 </calcite-notice>
           <calcite-list id="result-list"></calcite-list>     
     </calcite-shell-panel>
   </calcite-shell>
 <div id="viewDiv">
-  <calcite-button id="searchEtx">Search Here</calcite-button>
+  <calcite-button id="searchEtx" kind="neutral">Search Here</calcite-button>
   <calcite-select id="selectmap">
     <calcite-option label="Choose Historical Map" value="none" selected="true"></calcite-option>
     <calcite-option label="1888 Sanborn Map" value="1888"></calcite-option> 
@@ -373,8 +375,8 @@
     const view = new MapView({
       container: "viewDiv",
       map: map,
-      center: [-88.5694, 47.1211],
-      zoom: 7,
+      center: [-88.3028615, 47.144998],
+      zoom: 10,
       highlightOptions: {
       color: "red", // color of the highlight when a feature is selected
       fillOpacity: 0.1
@@ -511,7 +513,7 @@
       // Create a template for the popup
       var template = {
       // autocasts as new PopupTemplate()
-      title: "<font color='#FC0'>{title}",        
+      title: "<font color='#009af2'>{title}",        
       content: [     
             {
           type: "media",
@@ -526,7 +528,7 @@
           type: "fields",
           fieldInfos: [
             {
-              fieldName: "datecreated",
+              fieldName: "date2",
               label: "Date"
             },
             {
@@ -597,6 +599,7 @@ function setFeatureLayerFilter(expression) {
 
     // When the user clicks the search button filter features
     $( "#searchEtx" ).click(function() {
+      $('#instruction').hide();
       // Remove the previous pin if it exists
       if (pinGraphic) {
         view.graphics.remove(pinGraphic);
