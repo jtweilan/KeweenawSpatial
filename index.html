@@ -257,7 +257,7 @@
     </calcite-shell-panel>
   </calcite-shell>
 <div id="viewDiv">
-  <calcite-button id="searchEtx" kind="neutral">Search Here</calcite-button>
+  <calcite-button id="searchEtx" kind="brand">Search Here</calcite-button>
   <calcite-select id="selectmap">
     <calcite-option label="Choose Historical Map" value="none" selected="true"></calcite-option>
     <calcite-option label="1888 Sanborn Map" value="1888"></calcite-option> 
@@ -606,7 +606,7 @@ function setFeatureLayerFilter(expression) {
 
   //  controlVisitedTypeEl.addEventListener("calciteRadioGroupChange", async (event) => { orderBy = event.target.value, filterItems() });
    // controlThemeEl.addEventListener("calciteSelectChange", async (event) => { theme = event.target.value, filterItems() });
-    controlMapEl.addEventListener("calciteSelectChange", async (event) => { mapyear = event.target.value, filterItems() });
+    //controlMapEl.addEventListener("calciteSelectChange", async (event) => { mapyear = event.target.value, filterItems() });
    
     // When the user clicks the search button filter features
     $( ".esri-search__submit-button" ).click(function() {
@@ -677,10 +677,10 @@ function setFeatureLayerFilter(expression) {
         searchStrings.push(themeString);
       }     
 */
-      if (mapVal != 'none') {
+      /*if (mapVal != 'none') {
         var mapString = "mapyear =  '" + mapVal + "'";
         searchStrings.push(mapString);
-      }         
+      }         */
 
       // Create a query string from the searchStrings array
       var queryString = searchStrings.join(" AND ");
@@ -700,8 +700,6 @@ function setFeatureLayerFilter(expression) {
       const results = await layer.queryFeatures(query);
 
       graphics = results.features;    
-
-
 
       document.getElementById("result-block").innerHTML = "<h5>Photos in this area (" + graphics.length + ")</h5>"; 
 
