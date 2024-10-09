@@ -222,7 +222,7 @@
                 <a class="nav-link" href="https://cchi.mtu.edu" target="_blank" rel="noopener">CCHI</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="https://www.mtu.edu/library/archives/" target="_blank" rel="noopener">Michigan Tech Archives</a>
+                <a class="nav-link" href="https://www.mtu.edu/social-sciences/" target="_blank" rel="noopener">Social Sciences</a>
             </li>           
         </ul>
     </div>
@@ -630,7 +630,7 @@ function setFeatureLayerFilter(expression) {
       if (searchVal != '') {
         $( "#searchDiv-input" ).val("");
         console.log(searchVal);
-        filterItems();
+        //filterItems();
       }     
   }); 
 
@@ -640,10 +640,16 @@ function setFeatureLayerFilter(expression) {
       if (event.keyCode === 13) {
         // Cancel the default action, if needed
         event.preventDefault();
+        $('#instruction').hide();
         // Trigger the button element with a click
         $( ".esri-search__submit-button" ).click();
       }        
-   });    
+   });  
+
+  // if the users clicks the search button
+  $( ".esri-search__submit-button" ).click(function(event) {
+    $('#instruction').hide();
+  });  
 
     const countDefault = 1;
     const orderByDefault = "DESC"
@@ -665,6 +671,11 @@ function setFeatureLayerFilter(expression) {
       console.log(searchVal, themeVal);
       let query = layer.createQuery();
       query.returnGeometry = true;
+
+      if (searchVal != '') {
+        var searchValString = "(Upper(title) LIKE '%" + searchVal.toUpperCase() + "%' OR Upper(subject) LIKE '%"+ searchVal.toUpperCase() + "%' OR Upper(desc_) LIKE '%" + searchVal + "%' OR Upper(image_no) LIKE '%" + searchVal + "%' OR Upper(date2) LIKE '%" + searchVal + "')"; 
+        searchStrings.push(searchValString);
+      }
      /* if (searchVal != '') {
         var searchValString = "(Upper(title) LIKE '%" + searchVal.toUpperCase() + "%' OR Upper(subject) LIKE '%"+ searchVal.toUpperCase() + "%' OR Upper(desc_) LIKE '%" + searchVal + "%' OR Upper(image_no) LIKE '%" + searchVal + "%' OR Upper(date2) LIKE '%" + searchVal + "')"; 
         searchStrings.push(searchValString);            
