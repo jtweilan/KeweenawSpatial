@@ -316,6 +316,9 @@
          map_1954: new TileLayer({
           url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/Hosted/mtu1955/MapServer",    
         }), 
+         map_1951: new TileLayer({
+          url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/Hosted/HoughtonHancock_1951_Orthomosaic_LVerissimo_V02/MapServer",    
+        }), 
          map_1955: new TileLayer({
           url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/Hosted/mtu1955/MapServer",    
         }), 
@@ -389,30 +392,32 @@
 
     const layer = new FeatureLayer({
       url:
-        "https://services2.arcgis.com/RPhrOu9XQzI31xTa/arcgis/rest/services/CCHI_Viewsheds_Joined/FeatureServer/0",
+        "https://services2.arcgis.com/RPhrOu9XQzI31xTa/arcgis/rest/services/CCHI_Viewsheds_meatadata/FeatureServer/0",
       outFields: ["*"],
       renderer: renderer,  
       maxScale: 35.505170,  
       minScale: 0,   
       opacity: 0,
-      popupEnabled: false
+      popupEnabled: false,
+      id: "viewsheds"
     });  
 
     const pointlayer = new FeatureLayer({
       url:
-        "https://services2.arcgis.com/RPhrOu9XQzI31xTa/arcgis/rest/services/CCHI_Viewsheds_Focalpoints/FeatureServer/0",
+        "https://services2.arcgis.com/RPhrOu9XQzI31xTa/arcgis/rest/services/CCHI_Viewsheds_FP/FeatureServer/0",
       outFields: ["*"], 
       renderer: camera,       
       maxScale: 35.505170,  // Starts appearing at zoom level 18
       minScale: 4513.988705,  // Matches hmlayer's maxScale
       visible: true,
-      highlightEnabled: false 
+      highlightEnabled: false,
+      id: "fp"
     });
     
 
     const hmlayer = new FeatureLayer({
       url:
-        "https://services2.arcgis.com/RPhrOu9XQzI31xTa/arcgis/rest/services/CCHI_Viewsheds_Focalpoints/FeatureServer/0",
+        "https://services2.arcgis.com/RPhrOu9XQzI31xTa/arcgis/rest/services/CCHI_Viewsheds_FP/FeatureServer/0",
       outFields: ["*"], 
       renderer: hmrenderer,       
       maxScale: 4513.988705,  // Disappears at zoom level 18
@@ -523,12 +528,51 @@
         } else {
           console.log("Tile layer not found for the given map year:", year);
         }
-      }    
+      }   
+
+       const addToShoebox = {
+          title: "Add to Shoebox",
+          id: "shoebox",
+          icon: "rectangle-plus"
+        }; 
+
+      reactiveUtils.on(
+        () => view.popup,
+        "trigger-action",
+        (event) => {
+          if (event.action.id === "shoebox") {
+            const imgId = view.popup.selectedFeature.attributes.image_no;
+            const url = 'https://cchi-d11.mtu.edu/jsonapi/commerce_product/cchi_image_products/?filter[field_image_no]=' + encodeURIComponent(imgId);
+
+            $.ajax({
+              url: url,
+              async: false, // NOTE: Consider using async/await instead of blocking
+              success: function (result) {
+                console.log(result);
+                if (result.data.length > 0) {
+                  const variationId = result.data[0].relationships.variations.data[0].meta.drupal_internal__target_id;
+                  console.log(variationId);
+
+                  // Redirect or open the cart link in a new tab
+                  const cartUrl = `https://cchi-d11.mtu.edu/cart-links/${variationId}-1`;
+                  window.open(cartUrl, '_blank'); // Or use window.location.href = cartUrl to redirect
+                } else {
+                  console.log("No variation found for this image.");
+                }
+              },
+              error: function (xhr, status, error) {
+                console.error("Failed to fetch variationId:", error);
+              }
+            });
+          }
+        }
+      ) 
           
       // Create a template for the popup
       var template = {
       // autocasts as new PopupTemplate()
-      title: "<font color='#009af2'>{title}",        
+      title: "<font color='#009af2'>{title}",  
+      actions: [addToShoebox],      
       content: [     
             {
           type: "media",
@@ -897,7 +941,7 @@ function setFeatureLayerFilter(expression) {
     if (response.results.length) {
       const graphic = response.results[0].graphic; 
       console.log(graphic);
-      if (graphic.layer.title === "CCHI Viewsheds Focalpoints") {
+      if (graphic.layer.id === "fp") {
         view.whenLayerView(layer).then((layerView) => {
           const id = graphic.attributes.image_no;
           const year = graphic.attributes.mapyear;
@@ -919,7 +963,7 @@ function setFeatureLayerFilter(expression) {
           });
         });
         console.log(graphic);
-      } else if (graphic.layer.title === "CCHI Viewsheds Joined") {
+      } else if (graphic.layer.id === "viewsheds") {
           createPoint(event);
       }
     } else if (!response.results.length) {
