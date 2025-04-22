@@ -528,14 +528,16 @@
         } else {
           console.log("Tile layer not found for the given map year:", year);
         }
-      }   
+      }
 
+     // custom popup action 
      const addToShoebox = {
         title: "Add to Shoebox",
         id: "shoebox",
         icon: "rectangle-plus"
       }; 
 
+      // get the variation id from CCHI and use it to build the add to shoebox url
       reactiveUtils.on(
         () => view.popup,
         "trigger-action",
