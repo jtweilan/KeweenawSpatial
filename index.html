@@ -544,7 +544,7 @@
         (event) => {
           if (event.action.id === "shoebox") {
             const imgId = view.popup.selectedFeature.attributes.image_no;
-            const url = 'https://cchi-d11.mtu.edu/jsonapi/commerce_product/cchi_image_products/?filter[field_image_no]=' + encodeURIComponent(imgId);
+            const url = 'https://cchi.mtu.edu/jsonapi/commerce_product/cchi_image_products/?filter[field_image_no]=' + encodeURIComponent(imgId);
 
             $.ajax({
               url: url,
