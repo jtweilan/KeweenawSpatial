@@ -9,4 +9,9 @@ if (!html.includes(layerUrl)) {
   process.exit(1);
 }
 
+if (!html.includes('Failed to load PLSS Sections layer')) {
+  console.error('PLSS Sections layer error handler missing');
+  process.exit(1);
+}
+
 console.log('PLSS Sections layer found');

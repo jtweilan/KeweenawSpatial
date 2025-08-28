@@ -442,6 +442,12 @@
       }
     });
 
+    plssLayer
+      .when()
+      .catch((error) => {
+        console.error("Failed to load PLSS Sections layer:", error);
+      });
+
     // add all of the layers to the map
     map.addMany([layer, pointlayer, hmlayer, plssLayer]);
     
