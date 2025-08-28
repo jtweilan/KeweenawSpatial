@@ -290,7 +290,7 @@
       // Create an object to store tile layers
       const tileLayers = {
         map_1949: new TileLayer({
-          url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/KeweenawHSDI/Kett_19496_FIPS/MapServer?f=jsapi",
+          url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/KeweenawHSDI/Kett_19496_FIPS/MapServer",
         }),
         map_1888: new TileLayer({
           url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/KeweenawHSDI/KeTT_1888_FIPS/MapServer",
@@ -426,7 +426,7 @@
     });
 
     const plssLayer = new FeatureLayer({
-      url: "https://gis.blm.gov/arcgis/rest/services/BLM_National_Data/BLM_Natl_PLSS_CadNSDI/MapServer/2",
+      url: "https://gis.blm.gov/arcgis/rest/services/BLM_National_Data/PLSS_CadNSDI/MapServer/2",
       title: "PLSS Sections",
       outFields: ["*"],
       renderer: {
