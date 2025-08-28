@@ -290,7 +290,7 @@
       // Create an object to store tile layers
       const tileLayers = {
         map_1949: new TileLayer({
-          url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/KeweenawHSDI/Kett_19496_FIPS/MapServer?f=jsapi",
+          url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/KeweenawHSDI/Kett_19496_FIPS/MapServer",
         }),
         map_1888: new TileLayer({
           url: "https://portal1-geo.sabu.mtu.edu/server/rest/services/KeweenawHSDI/KeTT_1888_FIPS/MapServer",
@@ -418,15 +418,32 @@
     const hmlayer = new FeatureLayer({
       url:
         "https://services2.arcgis.com/RPhrOu9XQzI31xTa/arcgis/rest/services/CCHI_Viewsheds_FP/FeatureServer/0",
-      outFields: ["*"], 
-      renderer: hmrenderer,       
+      outFields: ["*"],
+      renderer: hmrenderer,
       maxScale: 4513.988705,  // Disappears at zoom level 18
       minScale: 591657527.591555,
-      visible: true    
+      visible: true
+    });
+
+    const plssLayer = new FeatureLayer({
+      url: "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_PLSS_Sections/FeatureServer/0",
+      title: "PLSS Sections",
+      outFields: ["*"],
+      renderer: {
+        type: "simple",
+        symbol: {
+          type: "simple-fill",
+          color: [0, 0, 0, 0],
+          outline: {
+            color: [255, 255, 0, 0.8],
+            width: 1
+          }
+        }
+      }
     });
 
     // add all of the layers to the map
-    map.addMany([layer, pointlayer, hmlayer]);
+    map.addMany([layer, pointlayer, hmlayer, plssLayer]);
     
     // dock popup
     view.popup = {
