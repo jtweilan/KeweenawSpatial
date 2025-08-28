@@ -418,15 +418,32 @@
     const hmlayer = new FeatureLayer({
       url:
         "https://services2.arcgis.com/RPhrOu9XQzI31xTa/arcgis/rest/services/CCHI_Viewsheds_FP/FeatureServer/0",
-      outFields: ["*"], 
-      renderer: hmrenderer,       
+      outFields: ["*"],
+      renderer: hmrenderer,
       maxScale: 4513.988705,  // Disappears at zoom level 18
       minScale: 591657527.591555,
-      visible: true    
+      visible: true
+    });
+
+    const plssLayer = new FeatureLayer({
+      url: "https://gis.blm.gov/arcgis/rest/services/BLM_National_Data/BLM_Natl_PLSS_CadNSDI/MapServer/2",
+      title: "PLSS Sections",
+      outFields: ["*"],
+      renderer: {
+        type: "simple",
+        symbol: {
+          type: "simple-fill",
+          color: [0, 0, 0, 0],
+          outline: {
+            color: [255, 255, 0, 0.8],
+            width: 1
+          }
+        }
+      }
     });
 
     // add all of the layers to the map
-    map.addMany([layer, pointlayer, hmlayer]);
+    map.addMany([layer, pointlayer, hmlayer, plssLayer]);
     
     // dock popup
     view.popup = {
